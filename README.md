@@ -102,7 +102,7 @@ C:\wamp64\www\matatu-booking\
 
 ### Step 4 – Open in Browser
 ```
-http://localhost/matatu-booking/
+https://nganyazanai.netlify.app/
 ```
 
 ---

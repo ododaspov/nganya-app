@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register – NaiRide</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="auth-page">
+
+  <div class="auth-wrapper">
+    <!-- Left panel -->
+    <div class="auth-banner">
+      <div class="auth-banner-content">
+        <a href="index.html" class="auth-logo">🚐 NaiRide</a>
+        <h2>Join NaiRide Today</h2>
+        <p>Create your account and start booking matatu seats from anywhere in Kenya.</p>
+        <ul class="auth-perks">
+          <li><i class="fas fa-check-circle"></i> Free to register</li>
+          <li><i class="fas fa-check-circle"></i> Instant seat confirmation</li>
+          <li><i class="fas fa-check-circle"></i> E-ticket via SMS & email</li>
+          <li><i class="fas fa-check-circle"></i> Cancel & reschedule easily</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-card">
+        <h2>Create Your Account</h2>
+        <p class="auth-subtitle">Already have an account? <a href="login.html">Sign in here</a></p>
+
+        <div id="reg-error" class="alert alert-error hidden"></div>
+        <div id="reg-success" class="alert alert-success hidden"></div>
+
+        <form id="registerForm" onsubmit="handleRegister(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> First Name</label>
+              <input type="text" id="first-name" placeholder="e.g. John" required/>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Last Name</label>
+              <input type="text" id="last-name" placeholder="e.g. Kamau" required/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> Email Address</label>
+            <input type="email" id="reg-email" placeholder="your@email.com" required/>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-phone"></i> Phone Number (M-Pesa)</label>
+            <input type="tel" id="reg-phone" placeholder="e.g. 0712 345 678" required/>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-id-card"></i> National ID / Passport</label>
+            <input type="text" id="reg-id" placeholder="Enter your ID number" required/>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <div class="input-with-icon">
+              <input type="password" id="reg-password" placeholder="Min. 8 characters" required/>
+              <span class="toggle-pw" onclick="togglePassword('reg-password', this)">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <div class="password-strength" id="pw-strength"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Confirm Password</label>
+            <input type="password" id="reg-confirm" placeholder="Repeat your password" required/>
+          </div>
+          <label class="checkbox-label terms">
+            <input type="checkbox" id="terms-check" required/>
+            I agree to NaiRide's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+          <button type="submit" class="btn-primary btn-block">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Password strength indicator
+    document.getElementById('reg-password').addEventListener('input', function() {
+      const val = this.value;
+      const bar = document.getElementById('pw-strength');
+      let strength = 0;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+      const colors = ['', '#e74c3c', '#e67e22', '#f1c40f', '#2ecc71'];
+      bar.textContent = strength ? 'Password strength: ' + labels[strength] : '';
+      bar.style.color = colors[strength];
+    });
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const pw = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+      const errorDiv = document.getElementById('reg-error');
+      const successDiv = document.getElementById('reg-success');
+
+      if (pw !== confirm) {
+        errorDiv.textContent = 'Passwords do not match.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      if (pw.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('first_name', document.getElementById('first-name').value);
+      formData.append('last_name', document.getElementById('last-name').value);
+      formData.append('email', document.getElementById('reg-email').value);
+      formData.append('phone', document.getElementById('reg-phone').value);
+      formData.append('id_number', document.getElementById('reg-id').value);
+      formData.append('password', pw);
+
+      fetch('php/register.php', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            successDiv.textContent = 'Account created! Redirecting to login...';
+            successDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            setTimeout(() => window.location.href = 'login.html', 1500);
+          } else {
+            errorDiv.textContent = data.message || 'Registration failed. Try again.';
+            errorDiv.classList.remove('hidden');
+          }
+        })
+        .catch(() => {
+          successDiv.textContent = 'Demo: Account created! Redirecting...';
+          successDiv.classList.remove('hidden');
+          setTimeout(() => window.location.href = 'login.html', 1500);
+        });
+    }
+  </script>
+</body>
+</html>

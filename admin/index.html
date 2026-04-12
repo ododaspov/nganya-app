@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel – NaiRide</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .admin-badge { background:#e74c3c; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:20px; vertical-align:middle; margin-left:6px; }
+  </style>
+</head>
+<body class="dashboard-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar admin-sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🚐</span>
+      <span class="brand-name">NaiRide <span class="admin-badge">ADMIN</span></span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="showAdminSection('overview')">
+        <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('bookings')">
+        <i class="fas fa-ticket-alt"></i> <span>All Bookings</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('routes')">
+        <i class="fas fa-route"></i> <span>Manage Routes</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('matatus')">
+        <i class="fas fa-bus"></i> <span>Manage Matatus</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('users')">
+        <i class="fas fa-users"></i> <span>Users</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('saccos')">
+        <i class="fas fa-building"></i> <span>SACCOs</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showAdminSection('reports')">
+        <i class="fas fa-chart-bar"></i> <span>Reports</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="../index.html" class="nav-item"><i class="fas fa-globe"></i> <span>View Website</span></a>
+      <a href="../login.html" class="nav-item logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+    <header class="topbar">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="topbar-title" id="admin-page-title">Admin Dashboard</div>
+      <div class="topbar-right">
+        <span class="notification-bell"><i class="fas fa-bell"></i><span class="badge">5</span></span>
+        <div class="user-avatar red">AD</div>
+        <span class="user-name">Admin</span>
+      </div>
+    </header>
+
+    <!-- OVERVIEW -->
+    <section class="dash-section active" id="admin-section-overview">
+      <div class="welcome-banner">
+        <div>
+          <h2>Admin Overview 📊</h2>
+          <p>Here's what's happening on the NaiRide platform today.</p>
+        </div>
+        <button class="btn-primary" onclick="showAdminSection('routes')"><i class="fas fa-plus"></i> Add New Route</button>
+      </div>
+
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fas fa-ticket-alt"></i></div>
+          <div class="stat-text"><h3 id="stat-total-bookings">247</h3><p>Total Bookings Today</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-users"></i></div>
+          <div class="stat-text"><h3 id="stat-users">1,284</h3><p>Registered Users</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fas fa-bus"></i></div>
+          <div class="stat-text"><h3 id="stat-matatus">68</h3><p>Active Matatus</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fas fa-coins"></i></div>
+          <div class="stat-text"><h3 id="stat-revenue">KES 312,450</h3><p>Revenue This Month</p></div>
+        </div>
+      </div>
+
+      <!-- Recent Bookings -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3><i class="fas fa-ticket-alt"></i> Recent Bookings</h3>
+          <a href="#" onclick="showAdminSection('bookings')">View All</a>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Passenger</th>
+              <th>Route</th>
+              <th>Operator</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="admin-recent-bookings"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ALL BOOKINGS -->
+    <section class="dash-section" id="admin-section-bookings">
+      <h2 class="section-title"><i class="fas fa-ticket-alt"></i> All Bookings</h2>
+      <div class="filter-bar">
+        <select onchange="filterAdminBookings(this.value)">
+          <option value="all">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="completed">Completed</option>
+        </select>
+        <input type="date" id="filter-date"/>
+        <input type="text" placeholder="Search passenger or booking ID..."/>
+        <button class="btn-primary btn-sm">Search</button>
+      </div>
+      <div class="section-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th><th>Passenger</th><th>Phone</th><th>Route</th>
+              <th>Matatu</th><th>Seat(s)</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-all-bookings"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MANAGE ROUTES -->
+    <section class="dash-section" id="admin-section-routes">
+      <h2 class="section-title"><i class="fas fa-route"></i> Manage Routes</h2>
+      <div class="section-card">
+        <div class="card-header">
+          <h3>Add New Route</h3>
+        </div>
+        <form class="admin-form" onsubmit="addRoute(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Origin</label>
+              <select id="route-origin" required>
+                <option value="">Select Origin</option>
+                <option>Nairobi CBD</option><option>Mombasa</option><option>Nakuru</option>
+                <option>Kisumu</option><option>Eldoret</option><option>Thika</option>
+                <option>Nyeri</option><option>Meru</option><option>Rongai</option>
+                <option>Westlands</option><option>Karen</option><option>Ngong</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Destination</label>
+              <select id="route-dest" required>
+                <option value="">Select Destination</option>
+                <option>Nairobi CBD</option><option>Mombasa</option><option>Nakuru</option>
+                <option>Kisumu</option><option>Eldoret</option><option>Thika</option>
+                <option>Nyeri</option><option>Meru</option><option>Rongai</option>
+                <option>Westlands</option><option>Karen</option><option>Ngong</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Route Number</label>
+              <input type="text" id="route-num" placeholder="e.g. Route 111" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Distance (km)</label>
+              <input type="number" id="route-dist" placeholder="e.g. 485" required/>
+            </div>
+            <div class="form-group">
+              <label>Duration</label>
+              <input type="text" id="route-dur" placeholder="e.g. 8 hours" required/>
+            </div>
+            <div class="form-group">
+              <label>Base Fare (KES)</label>
+              <input type="number" id="route-fare" placeholder="e.g. 1200" required/>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Add Route
+          </button>
+        </form>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header"><h3>Existing Routes</h3></div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Route #</th><th>From</th><th>To</th><th>Distance</th>
+              <th>Duration</th><th>Base Fare</th><th>Status</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="routes-table-body"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- MANAGE MATATUS -->
+    <section class="dash-section" id="admin-section-matatus">
+      <h2 class="section-title"><i class="fas fa-bus"></i> Manage Matatus</h2>
+      <div class="section-card">
+        <div class="card-header"><h3>Add New Matatu</h3></div>
+        <form class="admin-form" onsubmit="addMatatu(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Reg. Number (Number Plate)</label>
+              <input type="text" placeholder="e.g. KDG 234A" required/>
+            </div>
+            <div class="form-group">
+              <label>SACCO</label>
+              <select required>
+                <option value="">Select SACCO</option>
+                <option>Citi Hoppa</option><option>KBS</option><option>Modern Coast</option>
+                <option>Easy Coach</option><option>Forward Travelers</option>
+                <option>Guardian Coach</option><option>2NK SACCO</option>
+                <option>Akamba Bus</option><option>Dreamline</option>
+                <option>Transline Classic</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Route</label>
+              <select required>
+                <option value="">Select Route</option>
+                <option>Nairobi – Mombasa (Route 101)</option>
+                <option>Nairobi – Nakuru (Route 58)</option>
+                <option>Nairobi – Kisumu (Route 42)</option>
+                <option>Nairobi – Rongai (Route 111)</option>
+                <option>Nairobi – Westlands (Route 23)</option>
+                <option>Nairobi – Eldoret (Route 75)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Total Seats</label>
+              <input type="number" placeholder="e.g. 14" min="4" max="60" required/>
+            </div>
+            <div class="form-group">
+              <label>Departure Time</label>
+              <input type="time" required/>
+            </div>
+            <div class="form-group">
+              <label>Driver Name</label>
+              <input type="text" placeholder="e.g. Peter Ochieng" required/>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-sm"><i class="fas fa-plus"></i> Add Matatu</button>
+        </form>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header"><h3>Registered Matatus</h3></div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Reg No.</th><th>SACCO</th><th>Route</th><th>Seats</th><th>Departure</th><th>Driver</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="matatus-table-body"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- USERS -->
+    <section class="dash-section" id="admin-section-users">
+      <h2 class="section-title"><i class="fas fa-users"></i> Registered Users</h2>
+      <div class="filter-bar">
+        <input type="text" placeholder="Search by name, email or phone..."/>
+        <button class="btn-primary btn-sm">Search</button>
+      </div>
+      <div class="section-card">
+        <table class="data-table">
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>National ID</th><th>Bookings</th><th>Joined</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="users-table-body"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SACCOs -->
+    <section class="dash-section" id="admin-section-saccos">
+      <h2 class="section-title"><i class="fas fa-building"></i> Partner SACCOs</h2>
+      <div class="section-card">
+        <table class="data-table">
+          <thead>
+            <tr><th>#</th><th>SACCO Name</th><th>License No.</th><th>Contact</th><th>Routes</th><th>Matatus</th><th>Status</th></tr>
+          </thead>
+          <tbody id="saccos-table-body"><!-- JS populated --></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="dash-section" id="admin-section-reports">
+      <h2 class="section-title"><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+          <div class="stat-text"><h3>KES 312,450</h3><p>Monthly Revenue</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-ticket-alt"></i></div>
+          <div class="stat-text"><h3>3,847</h3><p>Bookings This Month</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fas fa-percentage"></i></div>
+          <div class="stat-text"><h3>87%</h3><p>Seat Occupancy Rate</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+          <div class="stat-text"><h3>142</h3><p>Cancellations This Month</p></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header"><h3>Top Routes by Bookings</h3></div>
+        <div id="top-routes-chart" class="simple-bar-chart"><!-- JS bars --></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

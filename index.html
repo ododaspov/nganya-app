@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NaiRide – Book Your Matatu</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* ── GREEN LED HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      background-image: url('assets/images/hero-green-led.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      overflow: hidden;
+    }
+    /* Dark overlay so text is readable over photo */
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0, 0, 0, 0.82) 0%,
+        rgba(0, 20, 5, 0.75) 50%,
+        rgba(0, 0, 0, 0.65) 100%
+      );
+      z-index: 0;
+    }
+    /* Neon green glow line at the bottom of hero */
+    .hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00ff41, #00cc33, #00ff41, transparent);
+      box-shadow: 0 0 20px #00ff41, 0 0 40px #00cc33;
+      z-index: 2;
+    }
+    .hero-content { position: relative; z-index: 1; }
+
+    /* Neon glow on hero heading */
+    .hero-content h1 .highlight {
+      color: #00ff41;
+      text-shadow: 0 0 10px #00ff41, 0 0 20px #00cc33, 0 0 40px #009922;
+    }
+    /* Neon badge */
+    .hero-badge {
+      background: rgba(0, 255, 65, 0.12);
+      border: 1px solid rgba(0, 255, 65, 0.4);
+      color: #00ff41;
+      text-shadow: 0 0 8px #00ff41;
+    }
+    .btn-search {
+      background: linear-gradient(135deg, #00cc33, #009922);
+      box-shadow: 0 4px 20px rgba(0, 255, 65, 0.35);
+    }
+    .btn-search:hover {
+      background: linear-gradient(135deg, #00ff41, #00cc33);
+      box-shadow: 0 4px 30px rgba(0, 255, 65, 0.6);
+    }
+
+    /* ── MATATU GALLERY SECTION ── */
+    .gallery-section {
+      padding: 80px 0;
+      background: #0d0d0d;
+      overflow: hidden;
+    }
+    .gallery-section .section-header h2 { color: #fff; }
+    .gallery-section .section-header p  { color: #888; }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 12px;
+      padding: 0 24px;
+    }
+    .gallery-card {
+      position: relative; border-radius: 12px; overflow: hidden;
+      cursor: pointer; group: true;
+    }
+    .gallery-card:first-child {
+      grid-column: span 2; /* Catalyst gets a wider slot */
+    }
+    .gallery-card img {
+      width: 100%; height: 280px; object-fit: cover;
+      transition: transform 0.5s ease, filter 0.4s ease;
+      display: block;
+    }
+    .gallery-card:first-child img { height: 340px; }
+    .gallery-card:hover img {
+      transform: scale(1.06);
+      filter: brightness(0.85);
+    }
+    .gallery-card-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 16px 14px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.88));
+      color: #fff; transform: translateY(8px);
+      transition: transform 0.3s ease;
+    }
+    .gallery-card:hover .gallery-card-overlay { transform: translateY(0); }
+    .gallery-matatu-name {
+      font-size: 1.15rem; font-weight: 800; letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .gallery-matatu-reg {
+      font-size: 0.78rem; color: #00ff41; font-weight: 600;
+      text-shadow: 0 0 8px #00ff41; letter-spacing: 2px; margin-top: 2px;
+    }
+    .gallery-matatu-desc { font-size: 0.82rem; color: #ccc; margin-top: 4px; }
+
+    /* Neon accent border on hover */
+    .gallery-card::before {
+      content: ''; position: absolute; inset: 0;
+      border: 2px solid transparent; border-radius: 12px;
+      transition: border-color 0.3s, box-shadow 0.3s; z-index: 2;
+      pointer-events: none;
+    }
+    .gallery-card:hover::before {
+      border-color: rgba(0,255,65,0.5);
+      box-shadow: inset 0 0 20px rgba(0,255,65,0.08), 0 0 20px rgba(0,255,65,0.15);
+    }
+
+    /* ── FEATURED MATATU STRIP ── */
+    .matatu-strip {
+      background: #111; padding: 40px 0; overflow: hidden;
+    }
+    .matatu-strip-inner {
+      display: flex; gap: 20px; padding: 0 24px; flex-wrap: nowrap;
+      animation: scrollStrip 30s linear infinite;
+    }
+    @keyframes scrollStrip {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .matatu-strip-card {
+      flex-shrink: 0; width: 200px; border-radius: 10px; overflow: hidden;
+      border: 1px solid #222; position: relative;
+    }
+    .matatu-strip-card img { width: 100%; height: 130px; object-fit: cover; }
+    .strip-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.75); color: #00ff41;
+      font-size: 0.7rem; font-weight: 700; padding: 4px 8px;
+      text-shadow: 0 0 6px #00ff41; letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">🚐</span>
+      <span class="brand-name">Nai<span style="color:#00ff41">Ride</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="booking.html">Book Now</a></li>
+      <li><a href="login.html">Login</a></li>
+      <li><a href="register.html" class="btn-nav">Register</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
+  </nav>
+
+  <!-- ── HERO  (Green LED matatu background) ── -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content" style="padding: 60px 60px 80px; max-width: 900px;">
+      <span class="hero-badge">🇰🇪 Kenya's #1 Matatu Booking Platform</span>
+      <h1 style="margin-bottom:20px; line-height:1.1;">
+        Travel Smart.<br/>Book Your <span class="highlight">Matatu</span> Today.
+      </h1>
+      <p style="font-size:1.15rem; color:rgba(255,255,255,0.82); max-width:600px; margin-bottom:40px;">
+        From Nairobi CBD to Mombasa, Nakuru, Kisumu and beyond — book your seat in seconds
+        and ride Kenya's most iconic, colourful matatus.
+      </p>
+
+      <!-- Quick Search -->
+      <div class="quick-search">
+        <div class="search-group">
+          <label><i class="fas fa-map-marker-alt"></i> From</label>
+          <select id="qs-from">
+            <option value="">Select Origin</option>
+            <option>Nairobi CBD</option><option>Westlands</option>
+            <option>Thika</option><option>Mombasa</option>
+            <option>Nakuru</option><option>Kisumu</option><option>Eldoret</option>
+          </select>
+        </div>
+        <div class="swap-btn" onclick="swapLocations()"><i class="fas fa-exchange-alt"></i></div>
+        <div class="search-group">
+          <label><i class="fas fa-map-pin"></i> To</label>
+          <select id="qs-to">
+            <option value="">Select Destination</option>
+            <option>Nairobi CBD</option><option>Westlands</option>
+            <option>Rongai</option><option>Karen</option><option>Ngong</option>
+            <option>Thika</option><option>Mombasa</option><option>Nakuru</option>
+            <option>Kisumu</option><option>Eldoret</option>
+            <option>Nyeri</option><option>Meru</option>
+          </select>
+        </div>
+        <div class="search-group">
+          <label><i class="fas fa-calendar"></i> Date</label>
+          <input type="date" id="qs-date"/>
+        </div>
+        <button class="btn-search" onclick="goToBooking()">
+          <i class="fas fa-search"></i> Find Matatus
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SCROLLING MATATU STRIP ── -->
+  <div class="matatu-strip" aria-hidden="true">
+    <div class="matatu-strip-inner" id="strip-inner">
+      <!-- duplicated for seamless scroll -->
+    </div>
+  </div>
+
+  <!-- ── MATATU GALLERY ── -->
+  <section class="gallery-section">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:40px;">
+        <h2>Our Fleet — Kenya's Finest Matatus</h2>
+        <p>Ride in style. Every matatu is unique, every journey unforgettable.</p>
+      </div>
+      <div class="gallery-grid">
+
+        <!-- 1. Catalyst – wide card -->
+        <div class="gallery-card">
+          <img src="assets/images/catalyst-front.jpg" alt="Catalyst Matatu KCF 8020"
+               onerror="this.style.background='linear-gradient(135deg,#1a1000,#3a2800)'; this.style.minHeight='340px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name">⚡ CATALYST</div>
+            <div class="gallery-matatu-reg">KCF 8020 &nbsp;·&nbsp; CYBER-SHOT ISUZU</div>
+            <div class="gallery-matatu-desc">Nairobi CBD → Rongai · The Yellow Beast</div>
+          </div>
+        </div>
+
+        <!-- 2. Arafat -->
+        <div class="gallery-card">
+          <img src="assets/images/arafat.jpg" alt="Arafat Matatu KCH 473B"
+               onerror="this.style.background='linear-gradient(135deg,#0d0020,#1a0040)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name">🔮 ARAFAT</div>
+            <div class="gallery-matatu-reg">KCH 473B &nbsp;·&nbsp; ONGATA LINE</div>
+            <div class="gallery-matatu-desc">Welcome to Goodlife · Nairobi → Ongata Rongai</div>
+          </div>
+        </div>
+
+        <!-- 3. Catalyst Side -->
+        <div class="gallery-card">
+          <img src="assets/images/catalyst-side.jpg" alt="Catalyst Side View"
+               onerror="this.style.background='linear-gradient(135deg,#1a0500,#2a1000)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name">🔥 CATALYST</div>
+            <div class="gallery-matatu-reg">KCF 8020 &nbsp;·&nbsp; SIDE PROFILE</div>
+            <div class="gallery-matatu-desc">Hip-hop culture on wheels</div>
+          </div>
+        </div>
+
+        <!-- 4. Pink Matatu -->
+        <div class="gallery-card">
+          <img src="assets/images/pink-matatu.jpg" alt="Pink Matatu"
+               onerror="this.style.background='linear-gradient(135deg,#200010,#400030)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name">🌸 PINK BEAUTY</div>
+            <div class="gallery-matatu-reg">KCG 899V</div>
+            <div class="gallery-matatu-desc">Tribal art on the move · Premium ride</div>
+          </div>
+        </div>
+
+        <!-- 5. Green LED -->
+        <div class="gallery-card">
+          <img src="assets/images/hero-green-led.jpg" alt="Green LED Matatu"
+               onerror="this.style.background='linear-gradient(135deg,#001a00,#002200)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name" style="color:#00ff41;text-shadow:0 0 10px #00ff41;">💚 GREEN PHANTOM</div>
+            <div class="gallery-matatu-reg">KCH 857 &nbsp;·&nbsp; NEON EDITION</div>
+            <div class="gallery-matatu-desc">LED-lit · Night rides · Full neon kit</div>
+          </div>
+        </div>
+
+        <!-- 6. Xtreme -->
+        <div class="gallery-card">
+          <img src="assets/images/xtreme.jpg" alt="Xtreme Matatu KDG 1012"
+               onerror="this.style.background='linear-gradient(135deg,#150020,#2a0040)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name">🚀 XTREME</div>
+            <div class="gallery-matatu-reg">KDG 1012 &nbsp;·&nbsp; SHIMOLI 001</div>
+            <div class="gallery-matatu-desc">Graffiti art · Premium sound system</div>
+          </div>
+        </div>
+
+        <!-- 7. Teal / Cyber -->
+        <div class="gallery-card">
+          <img src="assets/images/teal-matatu.jpg" alt="Cyber Matatu"
+               onerror="this.style.background='linear-gradient(135deg,#001520,#002030)'; this.style.minHeight='280px';"/>
+          <div class="gallery-card-overlay">
+            <div class="gallery-matatu-name" style="color:#00ddcc;text-shadow:0 0 10px #00ddcc;">🌊 CYBER WAVE</div>
+            <div class="gallery-matatu-reg">MCH 357 &nbsp;·&nbsp; NEON TEAL</div>
+            <div class="gallery-matatu-desc">Anime themed · Nairobi premium rides</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── POPULAR ROUTES ── -->
+  <section class="section" id="routes">
+    <div class="container">
+      <div class="section-header">
+        <h2>Popular Routes</h2>
+        <p>Discover the most travelled matatu routes across Kenya</p>
+      </div>
+      <div class="routes-grid">
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Mombasa'">
+          <div class="route-badge">Route 101</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Mombasa</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> Modern Coast / Easy Coach / Dreamline</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~8 hrs</span>
+              <span><i class="fas fa-tag"></i> From KES 1,200</span>
+            </div>
+          </div>
+        </div>
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Nakuru'">
+          <div class="route-badge">Route 58</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Nakuru</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> 2NK SACCO / Forward Travelers</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~2.5 hrs</span>
+              <span><i class="fas fa-tag"></i> From KES 500</span>
+            </div>
+          </div>
+        </div>
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Kisumu'">
+          <div class="route-badge">Route 42</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Kisumu</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> Akamba / Stagecoach</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~6 hrs</span>
+              <span><i class="fas fa-tag"></i> From KES 900</span>
+            </div>
+          </div>
+        </div>
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Rongai'">
+          <div class="route-badge">Route 111</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Rongai</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> Catalyst · Arafat · Xtreme SACCO</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~45 min</span>
+              <span><i class="fas fa-tag"></i> From KES 80</span>
+            </div>
+          </div>
+        </div>
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Westlands'">
+          <div class="route-badge">Route 23</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Westlands</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> Citi Hoppa / KBS</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~30 min</span>
+              <span><i class="fas fa-tag"></i> From KES 50</span>
+            </div>
+          </div>
+        </div>
+        <div class="route-card" onclick="location.href='booking.html?from=Nairobi+CBD&to=Eldoret'">
+          <div class="route-badge">Route 75</div>
+          <div class="route-info">
+            <div class="route-cities"><span>Nairobi CBD</span><i class="fas fa-arrow-right"></i><span>Eldoret</span></div>
+            <p class="route-sacco"><i class="fas fa-bus"></i> Guardian Coach / Eldoret Express</p>
+            <div class="route-meta">
+              <span><i class="fas fa-clock"></i> ~5 hrs</span>
+              <span><i class="fas fa-tag"></i> From KES 800</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHY NAIRIDE ── -->
+  <section class="section section-alt" id="why">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Choose NaiRide?</h2>
+        <p>We make your matatu journey easier, safer and more convenient</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h3>Instant Booking</h3>
+          <p>Book your seat in under 60 seconds. No more queuing at the stage.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Verified SACCOs</h3>
+          <p>All matatus on NaiRide are from licensed and verified Kenyan SACCOs.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+          <h3>M-Pesa Payments</h3>
+          <p>Pay with M-Pesa, Airtel Money or card. Fast and secure payments.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-ticket-alt"></i></div>
+          <h3>E-Ticket</h3>
+          <p>Receive your booking confirmation via SMS and email instantly.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+          <h3>Live Tracking</h3>
+          <p>Track your matatu in real-time and know exactly when to leave home.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-headset"></i></div>
+          <h3>24/7 Support</h3>
+          <p>Our customer support team is always ready to help you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── STATS ── -->
+  <section class="section stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item"><h3 class="stat-num" data-target="12500">0</h3><p>Happy Passengers</p></div>
+        <div class="stat-item"><h3 class="stat-num" data-target="48">0</h3><p>Routes Available</p></div>
+        <div class="stat-item"><h3 class="stat-num" data-target="10">0</h3><p>Partner SACCOs</p></div>
+        <div class="stat-item"><h3 class="stat-num" data-target="7">0</h3><p>Counties Served</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Ready to Book Your Ride?</h2>
+      <p>Join thousands of Kenyans who book their matatu online every day.</p>
+      <div class="cta-buttons">
+        <a href="register.html" class="btn-primary">Get Started Free</a>
+        <a href="booking.html" class="btn-secondary">Browse Routes</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="brand-icon">🚐</span> <strong>NaiRide</strong>
+          <p>Kenya's trusted matatu booking platform. Connecting commuters with reliable transport across the country.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="booking.html">Book a Seat</a></li>
+            <li><a href="register.html">Create Account</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="dashboard.html">My Bookings</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Popular Routes</h4>
+          <ul>
+            <li><a href="#">Nairobi – Mombasa</a></li>
+            <li><a href="#">Nairobi – Nakuru</a></li>
+            <li><a href="#">Nairobi – Kisumu</a></li>
+            <li><a href="#">Nairobi – Eldoret</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <ul>
+            <li><i class="fas fa-phone"></i> +254 700 123 456</li>
+            <li><i class="fas fa-envelope"></i> support@nairide.co.ke</li>
+            <li><i class="fas fa-map-marker-alt"></i> Tom Mboya St, Nairobi</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 NaiRide. All rights reserved. | Powered by Kenyan Innovation 🇰🇪</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Scrolling strip with the matatu photos
+    const stripMatatus = [
+      { img: 'assets/images/catalyst-front.jpg', label: 'CATALYST · KCF 8020' },
+      { img: 'assets/images/arafat.jpg',         label: 'ARAFAT · KCH 473B' },
+      { img: 'assets/images/pink-matatu.jpg',    label: 'PINK BEAUTY · KCG 899V' },
+      { img: 'assets/images/hero-green-led.jpg', label: 'GREEN PHANTOM' },
+      { img: 'assets/images/xtreme.jpg',         label: 'XTREME · KDG 1012' },
+      { img: 'assets/images/teal-matatu.jpg',    label: 'CYBER WAVE' },
+      { img: 'assets/images/catalyst-side.jpg',  label: 'CATALYST SIDE' },
+    ];
+    const inner = document.getElementById('strip-inner');
+    if (inner) {
+      // duplicate for seamless loop
+      [...stripMatatus, ...stripMatatus].forEach(m => {
+        inner.innerHTML += `
+          <div class="matatu-strip-card">
+            <img src="${m.img}" alt="${m.label}" style="width:100%;height:130px;object-fit:cover;"/>
+            <div class="strip-label">${m.label}</div>
+          </div>`;
+      });
+    }
+  </script>
+</body>
+</html>

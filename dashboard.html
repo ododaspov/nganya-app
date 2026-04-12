@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dashboard – NaiRide</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body class="dashboard-page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🚐</span>
+      <span class="brand-name">NaiRide</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="showSection('overview')">
+        <i class="fas fa-home"></i> <span>Overview</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showSection('bookings')">
+        <i class="fas fa-ticket-alt"></i> <span>My Bookings</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showSection('upcoming')">
+        <i class="fas fa-clock"></i> <span>Upcoming Trips</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showSection('history')">
+        <i class="fas fa-history"></i> <span>Travel History</span>
+      </a>
+      <a href="#" class="nav-item" onclick="showSection('profile')">
+        <i class="fas fa-user"></i> <span>My Profile</span>
+      </a>
+      <a href="booking.html" class="nav-item highlight">
+        <i class="fas fa-plus-circle"></i> <span>Book New Trip</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="login.html" class="nav-item logout">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="dashboard-main">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="topbar-title" id="page-title">Dashboard Overview</div>
+      <div class="topbar-right">
+        <span class="notification-bell"><i class="fas fa-bell"></i><span class="badge">2</span></span>
+        <div class="user-avatar">JK</div>
+        <span class="user-name">John Kamau</span>
+      </div>
+    </header>
+
+    <!-- OVERVIEW SECTION -->
+    <section class="dash-section active" id="section-overview">
+      <div class="welcome-banner">
+        <div>
+          <h2>Habari, John! 👋</h2>
+          <p>Ready for your next journey? Here's a summary of your travel activity.</p>
+        </div>
+        <a href="booking.html" class="btn-primary"><i class="fas fa-plus"></i> Book New Trip</a>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fas fa-ticket-alt"></i></div>
+          <div class="stat-text">
+            <h3>8</h3>
+            <p>Total Bookings</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-text">
+            <h3>6</h3>
+            <p>Completed Trips</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+          <div class="stat-text">
+            <h3>2</h3>
+            <p>Upcoming Trips</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fas fa-coins"></i></div>
+          <div class="stat-text">
+            <h3>KES 4,850</h3>
+            <p>Total Spent</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Trips Quick View -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3><i class="fas fa-clock"></i> Upcoming Trips</h3>
+          <a href="#" onclick="showSection('upcoming')">View All</a>
+        </div>
+        <div class="trips-list" id="upcoming-quick-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Recent Bookings Quick View -->
+      <div class="section-card">
+        <div class="card-header">
+          <h3><i class="fas fa-history"></i> Recent Bookings</h3>
+          <a href="#" onclick="showSection('bookings')">View All</a>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Route</th>
+              <th>Date</th>
+              <th>Seat(s)</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recent-bookings-body">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- BOOKINGS SECTION -->
+    <section class="dash-section" id="section-bookings">
+      <h2 class="section-title"><i class="fas fa-ticket-alt"></i> My Bookings</h2>
+
+      <div class="filter-bar">
+        <select onchange="filterBookings(this.value)">
+          <option value="all">All Bookings</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="completed">Completed</option>
+        </select>
+        <input type="text" placeholder="Search by route or booking ID..." oninput="searchBookings(this.value)"/>
+      </div>
+
+      <div class="bookings-grid" id="all-bookings-grid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- UPCOMING TRIPS -->
+    <section class="dash-section" id="section-upcoming">
+      <h2 class="section-title"><i class="fas fa-clock"></i> Upcoming Trips</h2>
+      <div class="trips-list large" id="upcoming-trips-list">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- TRAVEL HISTORY -->
+    <section class="dash-section" id="section-history">
+      <h2 class="section-title"><i class="fas fa-history"></i> Travel History</h2>
+      <div class="section-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Route</th>
+              <th>Operator</th>
+              <th>Date Travelled</th>
+              <th>Seat(s)</th>
+              <th>Amount Paid</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PROFILE SECTION -->
+    <section class="dash-section" id="section-profile">
+      <h2 class="section-title"><i class="fas fa-user"></i> My Profile</h2>
+      <div class="profile-layout">
+        <div class="profile-card">
+          <div class="profile-avatar-lg">JK</div>
+          <h3>John Kamau</h3>
+          <p>john.kamau@email.com</p>
+          <span class="member-badge">Member since Jan 2025</span>
+        </div>
+        <div class="profile-form-card">
+          <h3>Edit Profile</h3>
+          <form onsubmit="updateProfile(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" value="John"/>
+              </div>
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" value="Kamau"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" value="john.kamau@email.com"/>
+            </div>
+            <div class="form-group">
+              <label>Phone Number (M-Pesa)</label>
+              <input type="tel" value="0712 345 678"/>
+            </div>
+            <div class="form-group">
+              <label>National ID</label>
+              <input type="text" value="12345678"/>
+            </div>
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-save"></i> Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CANCEL BOOKING MODAL -->
+  <div class="modal-overlay hidden" id="cancel-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-times-circle"></i> Cancel Booking</h3>
+        <button onclick="closeModal()" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to cancel booking <strong id="cancel-booking-id"></strong>?</p>
+        <p class="warn-text"><i class="fas fa-exclamation-triangle"></i> Cancellations within 2 hours of departure are non-refundable.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-danger" onclick="confirmCancel()">Yes, Cancel</button>
+        <button class="btn-secondary" onclick="closeModal()">Keep Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

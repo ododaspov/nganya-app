@@ -1,0 +1,9 @@
+Place your matatu images in this folder with these exact names:
+
+hero-green-led.jpg     → The green neon LED matatu (used as homepage background)
+catalyst-front.jpg     → Yellow Catalyst/Cyber-shot front view (KCF 8020)
+catalyst-side.jpg      → Yellow/Red Catalyst side view
+arafat.jpg             → Purple Arafat/Goodlife matatu (KCH 473B) - Ongata Line
+pink-matatu.jpg        → Pink & black decorative matatu (KCG 899V)
+xtreme.jpg             → Purple Xtreme/Shimoli 001 matatu (KDG 1012)
+teal-matatu.jpg        → Teal/turquoise matatu (neon style)

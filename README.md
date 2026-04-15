@@ -61,7 +61,6 @@ matatu-booking/
 
 ---
 
-## ⚙️ Setup Instructions
 
 ### Prerequisites
 - PHP 7.4+ or PHP 8.x
@@ -69,35 +68,9 @@ matatu-booking/
 - A web server: Apache (XAMPP/WAMP) or Nginx
 - phpMyAdmin (optional, for DB management)
 
-### Step 1 – Database Setup
-1. Open **phpMyAdmin** or your MySQL client.
-2. Run the SQL file:
-   ```sql
-   SOURCE /path/to/matatu-booking/sql/matatu_db.sql;
-   ```
-   Or import via phpMyAdmin: `Import` → select `sql/matatu_db.sql` → Go.
 
-### Step 2 – Configure Database Connection
-Open `php/config.php` and update:
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'nairide_db');
-define('DB_USER', 'root');       // ← your MySQL username
-define('DB_PASS', '');           // ← your MySQL password
 ```
 
-### Step 3 – Place Files on Web Server
-**XAMPP (Windows):**
-```
-C:\xampp\htdocs\matatu-booking\
-```
-**WAMP:**
-```
-C:\wamp64\www\matatu-booking\
-```
-**Linux/Mac (Apache):**
-```
-/var/www/html/matatu-booking/
 ```
 
 ### Step 4 – Open in Browser
@@ -105,23 +78,7 @@ C:\wamp64\www\matatu-booking\
 https://nganyazanai.netlify.app/
 ```
 
----
 
-## 👤 Default Credentials
-
-| Role  | Email                  | Password       |
-|-------|------------------------|----------------|
-| Admin | admin@nairide.co.ke    | admin123       |
-| Demo  | Click "Demo Login"     | (no server needed) |
-
-> **Note:** The admin password hash in `matatu_db.sql` must be regenerated.
-> Run this PHP snippet to generate a bcrypt hash:
-> ```php
-> echo password_hash('admin123', PASSWORD_BCRYPT, ['cost' => 12]);
-> ```
-> Then update the `INSERT INTO users` line in the SQL file.
-
----
 
 ## 🔧 Three-Tier Architecture
 
